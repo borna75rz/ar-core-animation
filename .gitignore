@@ -71,3 +71,13 @@ fastlane/readme.md
 .idea/
 
 .DS_Store
+
+*.fbx
+*.sfa
+*.sfb
+*.jpg
+*.pdf
+*.gif
+/build/*
+app/build/*
+app/build
