@@ -41,7 +41,8 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
 
-sceneform.asset('sampledata/model_fight.fbx',
+
+sceneform.asset('sampledata/rp_nathan_animated_003_walking.fbx',
         'default',
-        'sampledata/model_fight.sfa',
-        'src/main/assets/model_fight')
+        'sampledata/rp_nathan_animated_003_walking.sfa',
+        'src/main/assets/nathan')

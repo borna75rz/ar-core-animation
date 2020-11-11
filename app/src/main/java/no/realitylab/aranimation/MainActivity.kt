@@ -9,8 +9,11 @@ import com.google.ar.core.Anchor
 import com.google.ar.core.HitResult
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.SkeletonNode
 import com.google.ar.sceneform.animation.ModelAnimator
+import com.google.ar.sceneform.math.Quaternion
+import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.ux.ArFragment
@@ -29,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         arFragment = sceneform_fragment as ArFragment
-        model = Uri.parse("model_fight.sfb")
+        model = Uri.parse("nathan.sfb")
 
         arFragment.setOnTapArPlaneListener { hitResult: HitResult, plane: Plane, motionEvent: MotionEvent ->
             if (plane.type != Plane.Type.HORIZONTAL_UPWARD_FACING) {
@@ -37,11 +40,10 @@ class MainActivity : AppCompatActivity() {
             }
             val anchor = hitResult.createAnchor()
             placeObject(arFragment, anchor, model)
-        }
 
-        animate_kick_button.setOnClickListener { animateModel("Character|Kick") }
-        animate_idle_button.setOnClickListener { animateModel("Character|Idle") }
-        animate_boxing_button.setOnClickListener { animateModel("Character|Boxing") }
+            animateModel("rp_nathan_animated_003_walking")
+
+        }
     }
 
     private fun animateModel(name: String) {
@@ -51,8 +53,9 @@ class MainActivity : AppCompatActivity() {
             }
         }
         renderable?.let { modelRenderable ->
-            val data = modelRenderable.getAnimationData(name)
-            animator = ModelAnimator(data, modelRenderable)
+            val data = modelRenderable.getAnimationData(0)
+            val animator = ModelAnimator(data, modelRenderable)
+            animator.setRepeatCount(1000)
             animator?.start()
         }
     }
@@ -79,11 +82,24 @@ class MainActivity : AppCompatActivity() {
 
         val skeletonNode = SkeletonNode()
         skeletonNode.renderable = renderable
+        skeletonNode.localRotation = Quaternion.axisAngle(
+            Vector3(0.0f, 1.0f, 0.0f),
+            -180f
+        )
 
         val node = TransformableNode(fragment.transformationSystem)
         node.addChild(skeletonNode)
         node.setParent(anchorNode)
-
+        node.rotationController.rotationRateDegrees = 180f
         fragment.arSceneView.scene.addChild(anchorNode)
+    }
+
+    fun createCubeNode(modelObject: ModelRenderable): Node {
+        val cubeNode =  Node().apply {
+            renderable = modelObject
+            localPosition = Vector3(0.0f, 0.15f, 0.0f)
+        }
+
+        return cubeNode
     }
 }
