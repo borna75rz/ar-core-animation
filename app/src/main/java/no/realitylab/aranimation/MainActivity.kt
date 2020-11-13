@@ -2,16 +2,11 @@ package no.realitylab.aranimation
 
 import android.graphics.Point
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MotionEvent
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import com.google.ar.core.Anchor
-import com.google.ar.core.HitResult
-import com.google.ar.core.Plane
-import com.google.ar.sceneform.AnchorNode
+import androidx.appcompat.app.AppCompatActivity
 import com.google.ar.sceneform.Camera
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.SkeletonNode
@@ -46,22 +41,16 @@ class MainActivity : AppCompatActivity() {
         balloonsLeftTxt = findViewById(R.id.balloonsCntTxt)
         shoot = findViewById(R.id.shootButton)
         var shoot: Button = findViewById(R.id.shootButton)
-        shoot.setOnClickListener{
+        shoot.setOnClickListener {
             shoot()
         }
         arFragment = sceneform_fragment as ArFragment
         model = Uri.parse("nathan.sfb")
         buildBulletModel()
 
-        arFragment.setOnTapArPlaneListener { hitResult: HitResult, plane: Plane, motionEvent: MotionEvent ->
-            if (plane.type != Plane.Type.HORIZONTAL_UPWARD_FACING) {
-                return@setOnTapArPlaneListener
-            }
-            val anchor = hitResult.createAnchor()
-            placeObject(arFragment, anchor, model)
 
-            animateModel("rp_nathan_animated_003_walking")
-
+        for (i in 0..7) {
+            placeObject(arFragment, i, model)
         }
 
 
@@ -81,13 +70,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun placeObject(fragment: ArFragment, anchor: Anchor, model: Uri) {
+    private fun placeObject(fragment: ArFragment, i: Int, model: Uri) {
         ModelRenderable.builder()
             .setSource(fragment.context, model)
             .build()
             .thenAccept {
                 renderable = it
-                addToScene(fragment, anchor, it)
+                addToScene(fragment, i, it)
             }
             .exceptionally {
                 val builder = AlertDialog.Builder(this)
@@ -145,7 +134,7 @@ class MainActivity : AppCompatActivity() {
                     if (nodeInContact != null) {
                         balloonsLeft--
                         balloonsLeftTxt?.setText("Balloons Left: $balloonsLeft")
-                        scene.removeChild(nodeInContact!!)
+                        scene.removeChild(nodeInContact)
                     }
 
                 }
@@ -164,29 +153,91 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun addToScene(fragment: ArFragment, anchor: Anchor, renderable: Renderable) {
-        val anchorNode = AnchorNode(anchor)
+    private fun addToScene(fragment: ArFragment, i: Int, renderable: Renderable) {
+        var x = 0f
+        var z = 0f
+        var rotationRateDegrees = 0f
+        when (i) {
+            0 -> {
+                x = 0f
+                z = -10f
+//                rotationRateDegrees = 4 * 45f - 180f
+
+            }
+            1 -> {
+                x = 10f
+                z = -10f
+//                rotationRateDegrees = 5 * 45f - 180f
+
+            }
+            2 -> {
+                x = 10f
+                z = 0f
+//                rotationRateDegrees = 6 * 45f - 180f
+
+            }
+            3 -> {
+                x = 10f
+                z = 10f
+//                rotationRateDegrees = 7 * 45f - 180f
+
+            }
+            4 -> {
+                x = 0f
+                z = 10f
+//                rotationRateDegrees = 0f - 180f
+
+            }
+            5 -> {
+                x = -10f
+                z = 10f
+//                rotationRateDegrees = 1 * 45f - 180f
+
+            }
+            6 -> {
+                x = -10f
+                z = 0f
+//                rotationRateDegrees = 2 * 45f - 180f
+
+            }
+            7 -> {
+                x = -10f
+                z = -10f
+//                rotationRateDegrees = 3 * 45f - 180f
+
+            }
+        }
 
         val skeletonNode = SkeletonNode()
         skeletonNode.renderable = renderable
         skeletonNode.localRotation = Quaternion.axisAngle(
             Vector3(0.0f, 1.0f, 0.0f),
-            -180f
+            rotationRateDegrees
         )
 
         val node = TransformableNode(fragment.transformationSystem)
         node.addChild(skeletonNode)
-        node.setParent(anchorNode)
-        node.rotationController.rotationRateDegrees = 180f
-        fragment.arSceneView.scene.addChild(anchorNode)
-    }
 
-    fun createCubeNode(modelObject: ModelRenderable): Node {
-        val cubeNode =  Node().apply {
-            renderable = modelObject
-            localPosition = Vector3(0.0f, 0.15f, 0.0f)
-        }
-
-        return cubeNode
+        val start_vector = Vector3(x, -1.5f, z)
+        node.worldPosition = start_vector
+        fragment.arSceneView.scene.addChild(node)
+        animateModel("rp_nathan_animated_003_walking")
+//        val ray = Ray(start_vector, Vector3(0f, -1.5f, 0f))
+//
+//        Thread {
+//            for (i in 0..199) {
+//                runOnUiThread {
+//                    val vector3 = ray.getPoint(i * 0.1f)
+//                    node.worldPosition = vector3
+//                }
+//                try {
+//                    Thread.sleep(10)
+//                } catch (e: InterruptedException) {
+//                    e.printStackTrace()
+//                }
+//
+//            }
+//
+//        }.start()
     }
 }
