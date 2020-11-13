@@ -26,8 +26,8 @@ class MainActivity : AppCompatActivity() {
     private var animator: ModelAnimator? = null
     private var bulletRenderable: ModelRenderable? = null
     private var point: Point? = null
-    private var balloonsLeft = 20
-    private var balloonsLeftTxt: TextView? = null
+    private var nathansLeft = 8
+    private var nathansLeftTxt: TextView? = null
     private var shoot: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
         point = Point()
         display.getRealSize(point)
-        balloonsLeftTxt = findViewById(R.id.balloonsCntTxt)
+        nathansLeftTxt = findViewById(R.id.nathansCntTxt)
         shoot = findViewById(R.id.shootButton)
         var shoot: Button = findViewById(R.id.shootButton)
         shoot.setOnClickListener {
@@ -132,8 +132,8 @@ class MainActivity : AppCompatActivity() {
                     val nodeInContact = scene.overlapTest(node)
 
                     if (nodeInContact != null) {
-                        balloonsLeft--
-                        balloonsLeftTxt?.setText("Balloons Left: $balloonsLeft")
+                        nathansLeft--
+                        nathansLeftTxt?.setText("Nathans Left: $nathansLeft")
                         scene.removeChild(nodeInContact)
                     }
 
