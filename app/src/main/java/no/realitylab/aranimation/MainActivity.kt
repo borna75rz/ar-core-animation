@@ -156,12 +156,12 @@ class MainActivity : AppCompatActivity() {
     private fun addToScene(fragment: ArFragment, i: Int, renderable: Renderable) {
         var x = 0f
         var z = 0f
-        var rotationRateDegrees = 0f
+        var rotationRateDegrees = (4 + i) * -45f
         when (i) {
             0 -> {
                 x = 0f
                 z = -10f
-//                rotationRateDegrees = 4 * 45f - 180f
+//                rotationRateDegrees = 4 * 45f
 
             }
             1 -> {
