@@ -11,6 +11,7 @@ import com.google.ar.sceneform.Camera
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.SkeletonNode
 import com.google.ar.sceneform.animation.ModelAnimator
+import com.google.ar.sceneform.collision.Ray
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.*
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun animateModel(name: String) {
+    private fun animateModel(name: String, ray: Ray, node: Node) {
         animator?.let { it ->
             if (it.isRunning) {
                 it.end()
@@ -68,6 +69,23 @@ class MainActivity : AppCompatActivity() {
             animator.setRepeatCount(1000)
             animator?.start()
         }
+
+        Thread {
+            for (j in 0..10) {
+
+                runOnUiThread {
+                    val vector3 = ray.getPoint(j * 1f)
+                    node.worldPosition = vector3
+                }
+                try {
+//                animator?.duration?.let { Thread.sleep(it) }
+                    Thread.sleep(2000)
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                }
+            }
+
+        }.start()
     }
 
     private fun placeObject(fragment: ArFragment, i: Int, model: Uri) {
@@ -218,26 +236,12 @@ class MainActivity : AppCompatActivity() {
         val node = TransformableNode(fragment.transformationSystem)
         node.addChild(skeletonNode)
 
-        val start_vector = Vector3(x, -1.5f, z)
+        val start_vector = Vector3(x, -3f, z)
         node.worldPosition = start_vector
         fragment.arSceneView.scene.addChild(node)
-        animateModel("rp_nathan_animated_003_walking")
-//        val ray = Ray(start_vector, Vector3(0f, -1.5f, 0f))
-//
-//        Thread {
-//            for (i in 0..199) {
-//                runOnUiThread {
-//                    val vector3 = ray.getPoint(i * 0.1f)
-//                    node.worldPosition = vector3
-//                }
-//                try {
-//                    Thread.sleep(10)
-//                } catch (e: InterruptedException) {
-//                    e.printStackTrace()
-//                }
-//
-//            }
-//
-//        }.start()
+        val ray = Ray(start_vector, start_vector.negated())
+        animateModel("rp_nathan_animated_003_walking", ray, node)
+
+
     }
 }
